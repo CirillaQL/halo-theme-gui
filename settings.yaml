@@ -31,6 +31,11 @@ spec:
       label: 样式
       formSchema:
         - $formkit: color
+          name: primary_color
+          label: 主配色
+          help: 作为朱砂点睛色，用于题字、印章、标签、链接与悬停状态。
+          value: "#d33f4f"
+        - $formkit: color
           name: background_color
           label: 背景颜色
           value: "#f2f2f2"
