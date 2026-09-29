@@ -14,7 +14,7 @@ spec:
   issues: https://github.com/CirillaQL/halo-theme-gui/issues
   settingName: "theme-halo-gui-setting"
   configMapName: "theme-halo-gui-configMap"
-  version: 1.0.3
+  version: 1.0.4
   requires: ">=2.0.0"
   license:
     - name: "GPL-3.0"

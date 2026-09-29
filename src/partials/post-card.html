@@ -3,14 +3,23 @@
   th:classappend="${#strings.isEmpty(post.spec.cover)} ? ' post-item-no-cover'"
   th:each="post : ${posts.items}"
 >
-  <p class="post-index" th:text="${#numbers.formatInteger(postStat.count, 2)}">01</p>
+  <p
+    class="post-index"
+    th:text="${#numbers.formatInteger((posts.page > 0 ? posts.page - 1 : 0) * posts.size + postStat.count, 2)}"
+  >
+    01
+  </p>
   <div class="post-body">
     <h3 class="post-title">
+      <span class="post-pinned" th:if="${post.spec.pinned}" title="置顶">顶</span>
       <a th:href="@{${post.status.permalink}}" th:text="${post.spec.title}"></a>
     </h3>
     <p class="post-meta">
       <span class="post-meta-item post-meta-date">
-        <time th:text="${#temporals.format(post.spec.publishTime, 'yyyy.MM.dd')}"></time>
+        <time
+          th:datetime="${#temporals.format(post.spec.publishTime, 'yyyy-MM-dd')}"
+          th:text="${#temporals.format(post.spec.publishTime, 'yyyy.MM.dd')}"
+        ></time>
       </span>
       <span class="post-meta-item post-meta-views">
         阅读量
@@ -37,10 +46,18 @@
       </span>
     </p>
     <p class="post-excerpt" th:text="${post.status.excerpt}"></p>
+    <a class="post-more" th:href="@{${post.status.permalink}}" aria-hidden="true" tabindex="-1"
+      >阅读全文</a
+    >
   </div>
   <figure class="post-cover" th:if="${not #strings.isEmpty(post.spec.cover)}">
     <a th:href="@{${post.status.permalink}}">
-      <img th:src="@{${post.spec.cover}}" th:alt="${post.spec.title}" loading="lazy" />
+      <img
+        th:src="@{${post.spec.cover}}"
+        th:alt="${post.spec.title}"
+        loading="lazy"
+        decoding="async"
+      />
     </a>
   </figure>
 </li>

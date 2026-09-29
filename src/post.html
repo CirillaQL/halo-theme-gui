@@ -4,55 +4,90 @@
     <script type="module" src="./js/post.ts"></script>
   </template>
 
-  <article class="article-detail">
-    <header class="article-header">
-      <h1 class="article-title" th:text="${post.spec.title}"></h1>
-      <div class="article-meta">
-        <time th:text="${#temporals.format(post.spec.publishTime, 'yyyy-MM-dd')}"></time>
-        <span class="article-meta-item" th:if="${not #lists.isEmpty(post.categories)}">
-          <a
-            th:each="cat : ${post.categories}"
-            th:href="@{${cat.status.permalink}}"
-            th:text="${cat.spec.displayName}"
-            class="category"
-          ></a>
-        </span>
-        <span class="article-meta-item">
-          阅读量
-          <span th:text="${post.stats?.visit ?: 0}">0</span>
-        </span>
-        <span class="article-meta-item" th:if="${not #lists.isEmpty(post.tags)}">
-          <a
-            th:each="tag : ${post.tags}"
-            th:href="@{${tag.status.permalink}}"
-            th:text="|#${tag.spec.displayName}|"
-            class="post-tag-badge inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-transparent px-2 py-0.5 text-xs font-medium whitespace-nowrap transition-[color,box-shadow]"
-          ></a>
-        </span>
-      </div>
-    </header>
+  <div class="reading-progress" aria-hidden="true"><span></span></div>
 
-    <div class="article-content" th:utext="${post.content.content}"></div>
+  <div class="article-layout">
+    <article class="article-detail">
+      <header class="article-header">
+        <p class="article-kicker">
+          <a th:href="@{/}">文章</a>
+          <th:block th:each="cat : ${post.categories}">
+            <i aria-hidden="true">·</i>
+            <a th:href="@{${cat.status.permalink}}" th:text="${cat.spec.displayName}"></a>
+          </th:block>
+        </p>
+        <h1 class="article-title" th:text="${post.spec.title}"></h1>
+        <p class="post-meta article-meta">
+          <span class="post-meta-item">
+            <time
+              th:datetime="${#temporals.format(post.spec.publishTime, 'yyyy-MM-dd')}"
+              th:text="${#temporals.format(post.spec.publishTime, 'yyyy.MM.dd')}"
+            ></time>
+          </span>
+          <span class="post-meta-item">
+            阅读量
+            <span th:text="${post.stats?.visit ?: 0}">0</span>
+          </span>
+          <span class="post-meta-item" data-reading-stats hidden></span>
+          <span class="post-meta-tags" th:if="${not #lists.isEmpty(post.tags)}">
+            <a
+              th:each="tag : ${post.tags}"
+              th:href="@{${tag.status.permalink}}"
+              th:text="|#${tag.spec.displayName}|"
+              class="post-tag-badge"
+            ></a>
+          </span>
+        </p>
+      </header>
 
-    <nav class="post-nav" th:with="cursor = ${postFinder.cursor(post.metadata.name)}">
-      <span>
+      <figure class="article-cover" th:if="${not #strings.isEmpty(post.spec.cover)}">
+        <img th:src="@{${post.spec.cover}}" th:alt="${post.spec.title}" decoding="async" />
+      </figure>
+
+      <aside class="article-toc" data-toc hidden>
+        <details class="article-toc-inner">
+          <summary>目录</summary>
+          <nav aria-label="文章目录"><ol data-toc-list></ol></nav>
+        </details>
+      </aside>
+
+      <div class="article-content" th:utext="${post.content.content}"></div>
+
+      <p class="article-end" aria-hidden="true"><span>完</span></p>
+
+      <nav
+        class="post-nav"
+        aria-label="上下篇"
+        th:with="cursor = ${postFinder.cursor(post.metadata.name)}"
+        th:if="${cursor.hasPrevious() || cursor.hasNext()}"
+      >
         <a
+          class="post-nav-item post-nav-prev"
           th:if="${cursor.hasPrevious()}"
           th:href="@{${cursor.previous.status.permalink}}"
-          th:text="|← ${cursor.previous.spec.title}|"
-        ></a>
-      </span>
-      <span>
+        >
+          <small>← 上一篇</small>
+          <span th:text="${cursor.previous.spec.title}"></span>
+        </a>
+        <span class="post-nav-item post-nav-empty" th:unless="${cursor.hasPrevious()}"></span>
         <a
+          class="post-nav-item post-nav-next"
           th:if="${cursor.hasNext()}"
           th:href="@{${cursor.next.status.permalink}}"
-          th:text="|${cursor.next.spec.title} →|"
-        ></a>
-      </span>
-    </nav>
-  </article>
-
-  <div th:if="${haloCommentEnabled}">
-    <halo:comment group="content.halo.run" kind="Post" th:attr="name=${post.metadata.name}" />
+        >
+          <small>下一篇 →</small>
+          <span th:text="${cursor.next.spec.title}"></span>
+        </a>
+      </nav>
+    </article>
   </div>
+
+  <section class="article-comments" th:if="${haloCommentEnabled}">
+    <p class="section-kicker">评论</p>
+    <halo:comment group="content.halo.run" kind="Post" th:attr="name=${post.metadata.name}" />
+  </section>
+
+  <button class="back-to-top" type="button" aria-label="回到顶部" data-back-to-top hidden>
+    <span aria-hidden="true">↑</span>
+  </button>
 </include>

@@ -30,10 +30,20 @@
       th:if="${not #strings.isEmpty(theme.config.home.hero_summary)}"
       th:text="${theme.config.home.hero_summary}"
     ></p>
+    <a class="hero-scroll" href="#home-posts" aria-label="向下阅读文章">
+      <span>向下</span>
+      <i aria-hidden="true"></i>
+    </a>
   </section>
 
-  <section class="home-posts" aria-labelledby="home-posts-title">
-    <p class="section-kicker" id="home-posts-title">00 · 文章</p>
+  <section class="home-posts" id="home-posts" aria-labelledby="home-posts-title">
+    <header class="home-posts-header">
+      <p class="section-kicker" id="home-posts-title">00 · 文章</p>
+      <p class="section-count" th:if="${posts.total > 0}">
+        共 <strong th:text="${posts.total}">0</strong> 篇
+      </p>
+    </header>
+    <p class="empty-state" th:if="${#lists.isEmpty(posts.items)}">尚无文章，静候落笔。</p>
     <ul class="post-list">
       <include src="post-card.html"></include>
     </ul>
