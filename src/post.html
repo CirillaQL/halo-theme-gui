@@ -55,30 +55,31 @@
 
       <p class="article-end" aria-hidden="true"><span>完</span></p>
 
-      <nav
-        class="post-nav"
-        aria-label="上下篇"
-        th:with="cursor = ${postFinder.cursor(post.metadata.name)}"
-        th:if="${cursor.hasPrevious() || cursor.hasNext()}"
-      >
-        <a
-          class="post-nav-item post-nav-prev"
-          th:if="${cursor.hasPrevious()}"
-          th:href="@{${cursor.previous.status.permalink}}"
+      <th:block th:with="cursor = ${postFinder.cursor(post.metadata.name)}">
+        <nav
+          class="post-nav"
+          aria-label="上下篇"
+          th:if="${cursor.hasPrevious() || cursor.hasNext()}"
         >
-          <small>← 上一篇</small>
-          <span th:text="${cursor.previous.spec.title}"></span>
-        </a>
-        <span class="post-nav-item post-nav-empty" th:unless="${cursor.hasPrevious()}"></span>
-        <a
-          class="post-nav-item post-nav-next"
-          th:if="${cursor.hasNext()}"
-          th:href="@{${cursor.next.status.permalink}}"
-        >
-          <small>下一篇 →</small>
-          <span th:text="${cursor.next.spec.title}"></span>
-        </a>
-      </nav>
+          <a
+            class="post-nav-item post-nav-prev"
+            th:if="${cursor.hasPrevious()}"
+            th:href="@{${cursor.previous.status.permalink}}"
+          >
+            <small>← 上一篇</small>
+            <span th:text="${cursor.previous.spec.title}"></span>
+          </a>
+          <span class="post-nav-item post-nav-empty" th:unless="${cursor.hasPrevious()}"></span>
+          <a
+            class="post-nav-item post-nav-next"
+            th:if="${cursor.hasNext()}"
+            th:href="@{${cursor.next.status.permalink}}"
+          >
+            <small>下一篇 →</small>
+            <span th:text="${cursor.next.spec.title}"></span>
+          </a>
+        </nav>
+      </th:block>
     </article>
   </div>
 
