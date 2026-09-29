@@ -1805,8 +1805,44 @@ a {
 
 /* 首页：卷轴提示、文章计数、列表细节 */
 
+/* 首页背景：只作用于首屏区域，不再铺到文章列表 */
+
+.site-main-home {
+  overflow-x: clip;
+  background-image: none;
+}
+
 .site-main-home .home-hero {
   position: relative;
+  isolation: isolate;
+}
+
+.home-hero::before {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 50%;
+  width: 100vw;
+  height: calc(max(1160px, 100vw) * 733 / 2146);
+  margin-left: -50vw;
+  pointer-events: none;
+  content: "";
+  background: var(--home-background-image, url("../assets/images/background.png")) center top /
+    max(1160px, 100vw) auto no-repeat;
+}
+
+/* 自定义背景图：裁切填满首屏，底部晕染进纸色 */
+.has-custom-bg .home-hero::before {
+  bottom: 0;
+  height: auto;
+  background-position: center;
+  background-size: cover;
+  -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent);
+  mask-image: linear-gradient(to bottom, #000 62%, transparent);
+}
+
+.site-main-home .hero-summary {
+  left: 0;
 }
 
 .hero-scroll {
@@ -2389,6 +2425,23 @@ a.post-nav-item:hover span {
 @media (max-width: 720px) {
   .hero-scroll {
     display: none;
+  }
+
+  .home-hero::before {
+    height: 510px;
+    background-position: 58% top;
+    background-size: auto 510px;
+  }
+
+  .has-custom-bg .home-hero::before {
+    height: auto;
+    background-position: center;
+    background-size: cover;
+  }
+
+  .site-main-home .hero-summary {
+    right: 0;
+    left: 0;
   }
 
   .post-more {

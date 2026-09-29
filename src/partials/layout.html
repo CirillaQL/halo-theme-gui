@@ -33,7 +33,7 @@
 
     <main
       class="site-main"
-      th:classappend="${_templateId == 'index'} ? ' site-main-home'"
+      th:classappend="${_templateId == 'index'} ? (${#strings.isEmpty(theme.config.home.background_image)} ? ' site-main-home' : ' site-main-home has-custom-bg')"
       th:style="${_templateId == 'index' && not #strings.isEmpty(theme.config.home.background_image)} ? |--home-background-image: url('${theme.config.home.background_image}')|"
     >
       <div class="container">
