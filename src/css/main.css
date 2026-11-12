@@ -1827,22 +1827,41 @@ a {
   margin-left: -50vw;
   pointer-events: none;
   content: "";
-  background: var(--home-background-image, url("../assets/images/background.png")) center top /
-    max(1160px, 100vw) auto no-repeat;
+  background: url("../assets/images/background.png") center top / max(1160px, 100vw) auto no-repeat;
+  opacity: clamp(0.1, calc(var(--home-bg-opacity, 100) / 100), 1);
 }
 
-/* 自定义背景图：裁切填满首屏，底部晕染进纸色 */
+/* 自定义背景图：限定在首屏内，按设置填充，底部晕染进纸色 */
 .has-custom-bg .home-hero::before {
   bottom: 0;
   height: auto;
-  background-position: center;
-  background-size: cover;
+  background-image: var(--home-background-image);
+  background-position: var(--home-bg-position, center);
+  background-size: var(--home-bg-size, cover);
   -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent);
   mask-image: linear-gradient(to bottom, #000 62%, transparent);
 }
 
+.no-home-bg-fade .home-hero::before {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+.no-home-bg .home-hero::before {
+  display: none;
+}
+
 .site-main-home .hero-summary {
   left: 0;
+}
+
+/* 关闭题头：导航栏下方直接接文章列表 */
+.site-main-home.no-home-hero {
+  padding-top: clamp(48px, 6vw, 84px);
+}
+
+.no-home-hero .home-posts {
+  padding-top: 0;
 }
 
 .home-posts {
@@ -2380,13 +2399,18 @@ a.post-nav-item:hover span {
 
   .has-custom-bg .home-hero::before {
     height: auto;
-    background-position: center;
-    background-size: cover;
+    background-image: var(--home-background-image-mobile, var(--home-background-image));
+    background-position: var(--home-bg-position, center);
+    background-size: var(--home-bg-size, cover);
   }
 
   .site-main-home .hero-summary {
     right: 0;
     left: 0;
+  }
+
+  .site-main-home.no-home-hero {
+    padding-top: 40px;
   }
 
   .post-more {

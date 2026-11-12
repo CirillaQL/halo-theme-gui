@@ -31,15 +31,33 @@
       </div>
     </header>
 
-    <main
-      class="site-main"
-      th:classappend="${_templateId == 'index'} ? (${#strings.isEmpty(theme.config.home.background_image)} ? ' site-main-home' : ' site-main-home has-custom-bg')"
-      th:style="${_templateId == 'index' && not #strings.isEmpty(theme.config.home.background_image)} ? |--home-background-image: url('${theme.config.home.background_image}')|"
+    <th:block
+      th:with="
+        isHome = ${_templateId == 'index'},
+        home = ${theme.config.home},
+        bgImage = ${home?.background_image},
+        bgMobileImage = ${home?.background_image_mobile},
+        bgMode = ${home?.background_mode ?: (#strings.isEmpty(bgImage) ? 'default' : 'custom')},
+        bgCustom = ${bgMode == 'custom' && not #strings.isEmpty(bgImage)},
+        bgFade = ${#strings.toString(home?.background_fade) != 'false'},
+        heroEnabled = ${#strings.toString(home?.hero_enabled) != 'false'},
+        bgSize = ${home?.background_fit == 'contain' ? 'contain' : (home?.background_fit == 'width' ? '100% auto' : 'cover')},
+        bgPosition = ${home?.background_position == 'top' ? 'center top' : (home?.background_position == 'bottom' ? 'center bottom' : 'center')},
+        bgOpacity = ${home?.background_opacity ?: 100},
+        bgImageVars = ${bgCustom} ? |--home-background-image: url('${bgImage}'); --home-background-image-mobile: url('${#strings.isEmpty(bgMobileImage) ? bgImage : bgMobileImage}');| : '',
+        homeClass = (${bgMode == 'none'} ? ' site-main-home no-home-bg' : (${bgCustom} ? (${bgFade} ? ' site-main-home has-custom-bg' : ' site-main-home has-custom-bg no-home-bg-fade') : ' site-main-home')) + (${heroEnabled} ? '' : ' no-home-hero')
+      "
     >
-      <div class="container">
-        <slot />
-      </div>
-    </main>
+      <main
+        class="site-main"
+        th:classappend="${isHome} ? ${homeClass}"
+        th:style="${isHome} ? |--home-bg-size: ${bgSize}; --home-bg-position: ${bgPosition}; --home-bg-opacity: ${bgOpacity}; ${bgImageVars}|"
+      >
+        <div class="container">
+          <slot />
+        </div>
+      </main>
+    </th:block>
 
     <footer class="site-footer">
       <div class="container">

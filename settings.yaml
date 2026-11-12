@@ -7,26 +7,104 @@ spec:
     - group: home
       label: 首页
       formSchema:
+        - $formkit: radio
+          name: background_mode
+          id: background_mode
+          label: 首页背景
+          help: 背景图仅作用于首页首屏区域，不会遮挡文章列表。
+          value: "default"
+          options:
+            - label: 内置水墨图
+              value: "default"
+            - label: 自定义图片
+              value: "custom"
+            - label: 不显示
+              value: "none"
+        - $formkit: attachment
+          name: background_image
+          key: background_image
+          label: 背景图
+          help: 可直接上传、从附件库选择，或填写图片地址。建议使用横向、画面简洁的图片。
+          value: ""
+          if: "$get(background_mode).value == 'custom'"
+        - $formkit: attachment
+          name: background_image_mobile
+          key: background_image_mobile
+          label: 手机端背景图
+          help: 可选。屏幕宽度不超过 720px 时使用，建议竖向或方形图片；留空则沿用上方背景图。
+          value: ""
+          if: "$get(background_mode).value == 'custom'"
+        - $formkit: select
+          name: background_fit
+          key: background_fit
+          label: 填充方式
+          value: "cover"
+          options:
+            - label: 铺满首屏（自动裁切）
+              value: "cover"
+            - label: 完整显示（可能留白）
+              value: "contain"
+            - label: 按宽度铺满（保持比例，裁去超出首屏的部分）
+              value: "width"
+          if: "$get(background_mode).value == 'custom'"
+        - $formkit: select
+          name: background_position
+          key: background_position
+          label: 对齐位置
+          help: 图片被裁切时，优先保留的部分。
+          value: "center"
+          options:
+            - label: 居中
+              value: "center"
+            - label: 顶部
+              value: "top"
+            - label: 底部
+              value: "bottom"
+          if: "$get(background_mode).value == 'custom'"
+        - $formkit: number
+          name: background_opacity
+          key: background_opacity
+          label: 背景浓淡
+          help: 10–100，数值越小背景越淡，题字越清晰。
+          value: 100
+          min: 10
+          max: 100
+          step: 5
+          if: "$get(background_mode).value != 'none'"
+        - $formkit: checkbox
+          name: background_fade
+          key: background_fade
+          label: 底部渐隐
+          help: 背景底部晕染进纸色，与文章列表自然衔接。
+          value: true
+          if: "$get(background_mode).value == 'custom'"
+        - $formkit: checkbox
+          name: hero_enabled
+          id: hero_enabled
+          label: 显示首页题头
+          help: 关闭后不显示题字、诗词与导语（首页背景随之隐藏），导航栏下方直接显示文章列表。
+          value: true
         - $formkit: text
           name: hero_title
+          key: hero_title
           label: 首页题字
           help: 显示在首页诗词上方。留空时显示“归”。
           value: "归"
+          if: "$get(hero_enabled).value"
         - $formkit: textarea
           name: hero_poem
+          key: hero_poem
           label: 首页诗词
           help: 显示在首页题字下方，支持换行。留空时显示主题默认诗词。
           value: "醉里青山日月亏\n浮云老\n照影共执杯"
+          if: "$get(hero_enabled).value"
         - $formkit: textarea
           name: hero_summary
+          key: hero_summary
           label: 首页导语
           help: 显示在首页大标题下方。留空则不显示。
           value: ""
-        - $formkit: attachment
-          name: background_image
-          label: 首页背景图
-          help: 仅在首页显示。留空时使用主题内置背景图。
-          value: ""
+          if: "$get(hero_enabled).value"
     - group: styles
       label: 样式
       formSchema:

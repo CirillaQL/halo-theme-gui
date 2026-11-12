@@ -4,7 +4,10 @@
     <script type="module" src="./js/index.ts"></script>
   </template>
 
-  <section class="home-hero">
+  <section
+    class="home-hero"
+    th:if="${#strings.toString(theme.config.home?.hero_enabled) != 'false'}"
+  >
     <h1 class="hero-title">
       <span class="hero-mark">
         <em

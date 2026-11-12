@@ -5,18 +5,22 @@
 
   <h1>Categories</h1>
   <ul class="category-list">
-    <li th:each="cat : ${categories.items}">
-      <a
-        th:href="@{${cat.status.permalink}}"
-        th:text="|${cat.spec.displayName} (${cat.postCount})|"
-        class="category"
-      ></a>
-    </li>
+    <th:block th:each="cat : ${categories}">
+      <li>
+        <a
+          th:href="@{${cat.status.permalink}}"
+          th:text="|${cat.spec.displayName} (${cat.postCount ?: 0})|"
+          class="category"
+        ></a>
+      </li>
+      <li th:each="child : ${cat.children}">
+        <a
+          th:href="@{${child.status.permalink}}"
+          th:text="|${cat.spec.displayName} / ${child.spec.displayName} (${child.postCount ?: 0})|"
+          class="category"
+        ></a>
+      </li>
+    </th:block>
   </ul>
-
-  <nav class="pagination" th:if="${categories.hasPrevious() || categories.hasNext()}">
-    <a th:if="${categories.hasPrevious()}" th:href="@{${categories.prevUrl}}">Previous</a>
-    <span th:text="|${categories.page} / ${categories.totalPages}|"></span>
-    <a th:if="${categories.hasNext()}" th:href="@{${categories.nextUrl}}">Next</a>
-  </nav>
+  <p class="empty-state" th:if="${#lists.isEmpty(categories)}">暂无分类。</p>
 </include>
