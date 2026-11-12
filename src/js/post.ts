@@ -96,6 +96,10 @@ function setupCodeCopy(root: HTMLElement) {
   if (!navigator.clipboard) return;
 
   for (const pre of Array.from(root.querySelectorAll<HTMLPreElement>("pre"))) {
+    // Leave blocks owned by highlighter plugins (e.g. Shiki's <shiki-code>) alone:
+    // they read the slotted <pre> directly and ship their own copy button.
+    if (pre.parentElement?.tagName.includes("-")) continue;
+
     const button = document.createElement("button");
     button.type = "button";
     button.className = "code-copy";
