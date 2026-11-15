@@ -1860,7 +1860,7 @@ a {
   padding-top: clamp(48px, 6vw, 84px);
 }
 
-.no-home-hero .home-posts {
+.no-home-hero .home-section:first-child {
   padding-top: 0;
 }
 
@@ -2439,5 +2439,537 @@ a.post-nav-item:hover span {
 
   .code-copy {
     opacity: 1;
+  }
+}
+
+/* 首页分区：最近文章 · 瞬间 · 图库，纵向排列，序号自动编排 */
+
+.home-sections {
+  counter-reset: home-section;
+}
+
+.home-section {
+  padding-top: clamp(64px, 9vw, 116px);
+  scroll-margin-top: 72px;
+}
+
+.home-section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: clamp(1.2rem, 2.4vw, 2rem);
+}
+
+.home-section-header .section-kicker {
+  margin-bottom: 0;
+}
+
+.home-section-kicker::before {
+  margin-right: -0.25rem;
+  counter-increment: home-section;
+  content: counter(home-section, decimal-leading-zero) " ·";
+}
+
+.home-section-more {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--muted);
+  font-family: var(--serif);
+  font-size: 0.82rem;
+  letter-spacing: 0.16em;
+  white-space: nowrap;
+  transition: color 180ms ease;
+}
+
+.home-section-more::after {
+  width: 1.6rem;
+  height: 1px;
+  content: "";
+  background: var(--accent);
+  transition: width 260ms ease;
+}
+
+.home-section-more:hover {
+  color: var(--accent-dark);
+}
+
+.home-section-more:hover::after {
+  width: 2.6rem;
+}
+
+/* 最近文章：首篇大图 */
+
+.recent-lead {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
+  gap: clamp(26px, 4.5vw, 64px);
+  align-items: center;
+  padding-bottom: clamp(32px, 4.5vw, 52px);
+}
+
+.recent-lead-no-cover {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.recent-lead-cover a {
+  aspect-ratio: 16 / 10;
+}
+
+.recent-lead-meta {
+  gap: 0.35rem 0.9rem;
+  margin-bottom: 0.9rem;
+  font-size: 0.8rem;
+}
+
+.recent-lead-title {
+  font-size: clamp(1.9rem, 3.6vw, 2.75rem);
+}
+
+.recent-lead .post-excerpt {
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+}
+
+.recent-lead-more {
+  margin-top: 1.4rem;
+}
+
+/* 最近文章：其余为双栏目录 */
+
+.recent-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: clamp(28px, 5vw, 72px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: linear-gradient(90deg, transparent, rgb(53 49 43 / 0.2) 12% 88%, transparent)
+    top / 100% 1px no-repeat;
+}
+
+.recent-item {
+  display: grid;
+  grid-template-columns: 2.2rem minmax(0, 1fr);
+  gap: 0.8rem;
+  padding: 1.25rem 0;
+  background: linear-gradient(90deg, rgb(53 49 43 / 0.14), transparent) bottom / 100% 1px
+    no-repeat;
+  transition: transform 220ms ease;
+}
+
+.recent-item:hover {
+  transform: translateX(4px);
+}
+
+.recent-item-index {
+  padding-top: 0.42rem;
+  color: var(--accent);
+  font-family: var(--serif);
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+}
+
+.recent-item-title {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0 0 0.35rem;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: clamp(1.08rem, 1.6vw, 1.24rem);
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  line-height: 1.55;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.recent-item-title .post-pinned {
+  font-size: 0.68em;
+}
+
+.recent-item-title a {
+  background: linear-gradient(currentColor, currentColor) left bottom / 0 1px no-repeat;
+  transition:
+    color 180ms ease,
+    background-size 320ms ease;
+}
+
+.recent-item-title a:hover {
+  color: var(--accent-dark);
+  background-size: 100% 1px;
+}
+
+.recent-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.8rem;
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--serif);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+}
+
+.recent-item-meta a:hover {
+  color: var(--accent-dark);
+}
+
+/* 瞬间：纸笺卡片 */
+
+.home-moment-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: clamp(16px, 2.2vw, 28px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-moment {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.4rem 1.45rem 1.35rem;
+  background: color-mix(in srgb, var(--paper-soft) 78%, transparent);
+  box-shadow: 0 10px 30px rgb(38 34 29 / 0.06);
+  transition:
+    transform 260ms ease,
+    box-shadow 260ms ease;
+}
+
+.home-moment::before,
+.home-moment::after {
+  position: absolute;
+  width: 1.1rem;
+  height: 1.1rem;
+  pointer-events: none;
+  content: "";
+}
+
+.home-moment::before {
+  top: 0;
+  left: 0;
+  border-top: 1px solid var(--accent);
+  border-left: 1px solid var(--accent);
+}
+
+.home-moment::after {
+  right: 0;
+  bottom: 0;
+  border-right: 1px solid rgb(48 45 40 / 0.36);
+  border-bottom: 1px solid rgb(48 45 40 / 0.36);
+}
+
+.home-moment:hover {
+  box-shadow: 0 16px 36px rgb(38 34 29 / 0.1);
+  transform: translateY(-3px);
+}
+
+/* 整张卡片可点，正文里的链接仍可单独点击 */
+.home-moment-link::after {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  content: "";
+}
+
+.home-moment-text a {
+  position: relative;
+  z-index: 2;
+}
+
+.home-moment-date {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  color: var(--muted);
+  font-family: var(--serif);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+}
+
+.home-moment-date strong {
+  color: var(--accent);
+  font-size: 2rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+.home-moment-text {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--ink-soft);
+  font-size: 1rem;
+  line-height: 1.95;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+}
+
+.home-moment-text > * {
+  display: inline;
+  margin: 0;
+}
+
+.home-moment-text > * + *::before {
+  content: " ";
+}
+
+.home-moment-text img,
+.home-moment-text video {
+  display: none;
+}
+
+.home-moment-thumbs {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: auto;
+}
+
+.home-moment-thumbs img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 1px;
+  object-fit: cover;
+  filter: saturate(0.7) contrast(0.96) sepia(0.06);
+  transition: filter 300ms ease;
+}
+
+.home-moment-thumbs img:only-child {
+  grid-column: span 2;
+  aspect-ratio: 4 / 3;
+}
+
+.home-moment:hover .home-moment-thumbs img {
+  filter: saturate(1) contrast(1);
+}
+
+.home-moment-thumbs-more {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding: 0.1rem 0.45rem;
+  background: rgb(37 35 31 / 0.7);
+  color: var(--paper-soft);
+  font-family: var(--serif);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+}
+
+.home-moment-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.7rem;
+  margin: 0;
+  color: var(--accent-dark);
+  font-family: var(--serif);
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+}
+
+/* 图库：首张大图的拼贴网格 */
+
+.home-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-flow: dense;
+  grid-auto-rows: clamp(130px, 15vw, 196px);
+  gap: clamp(8px, 1.2vw, 14px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.home-photo {
+  min-width: 0;
+}
+
+.home-photo:first-child {
+  grid-row: span 2;
+  grid-column: span 2;
+}
+
+.home-photo .photo-link {
+  height: 100%;
+  aspect-ratio: auto;
+}
+
+@media (max-width: 720px) {
+  .home-section {
+    padding-top: 64px;
+  }
+
+  .home-section-header .section-kicker::after {
+    display: none;
+  }
+
+  .home-section-more {
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+  }
+
+  .recent-lead {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.4rem;
+  }
+
+  .recent-lead-cover {
+    grid-column: auto;
+  }
+
+  .recent-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-photo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 132px;
+  }
+}
+
+/* 文章页（归档）：按年分组的目录 */
+
+.archives-page {
+  max-width: 920px;
+}
+
+.archives-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 1.2rem;
+}
+
+.archives-heading > p:first-child {
+  flex-basis: 100%;
+}
+
+.archive-group {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  gap: clamp(16px, 3vw, 40px);
+  padding-top: clamp(2rem, 4vw, 3rem);
+}
+
+.archive-group-year {
+  position: sticky;
+  top: 84px;
+  align-self: start;
+  margin: 0;
+  color: var(--accent-dark);
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+}
+
+.archive-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: linear-gradient(90deg, rgb(53 49 43 / 0.2), transparent) top / 100% 1px no-repeat;
+}
+
+.archive-item {
+  display: grid;
+  grid-template-columns: 3.4rem minmax(0, 1fr) auto;
+  gap: 0.4rem 1rem;
+  align-items: baseline;
+  padding: 1.15rem 0;
+  background: linear-gradient(90deg, rgb(53 49 43 / 0.13), transparent) bottom / 100% 1px
+    no-repeat;
+  transition: transform 220ms ease;
+}
+
+.archive-item:hover {
+  transform: translateX(4px);
+}
+
+.archive-item-date {
+  color: var(--accent);
+  font-family: var(--serif);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+}
+
+.archive-item-title {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: clamp(1.08rem, 1.7vw, 1.26rem);
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  line-height: 1.55;
+}
+
+.archive-item-title .post-pinned {
+  font-size: 0.68em;
+}
+
+.archive-item-title a {
+  background: linear-gradient(currentColor, currentColor) left bottom / 0 1px no-repeat;
+  transition:
+    color 180ms ease,
+    background-size 320ms ease;
+}
+
+.archive-item-title a:hover {
+  color: var(--accent-dark);
+  background-size: 100% 1px;
+}
+
+.archive-item-excerpt {
+  display: -webkit-box;
+  overflow: hidden;
+  margin: 0.3rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.8;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+}
+
+.archive-item-meta {
+  display: flex;
+  gap: 0.6rem;
+  margin: 0;
+  color: var(--muted);
+  font-family: var(--serif);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.archive-item-meta a:hover {
+  color: var(--accent-dark);
+}
+
+@media (max-width: 720px) {
+  .archive-group {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.6rem;
+  }
+
+  .archive-group-year {
+    position: static;
+  }
+
+  .archive-item {
+    grid-template-columns: 3rem minmax(0, 1fr);
+  }
+
+  .archive-item-meta {
+    grid-column: 2;
   }
 }

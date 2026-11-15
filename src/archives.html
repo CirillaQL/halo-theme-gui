@@ -1,32 +1,51 @@
 <include src="layout.html">
   <template name="head">
-    <title th:text="|Archives - ${site.title}|">Archives</title>
+    <title th:text="|文章 - ${site.title}|">Archives</title>
   </template>
 
-  <h1>Archives</h1>
+  <section class="archives-page">
+    <header class="page-heading archives-heading">
+      <p>archives</p>
+      <h1>文章</h1>
+      <p class="section-count" th:if="${archives.total > 0}">
+        共 <strong th:text="${archives.total}">0</strong> 篇
+      </p>
+    </header>
 
-  <th:block th:each="archive : ${archives.items}">
-    <div class="archive-year">
-      <h2 th:text="${archive.year}"></h2>
-      <th:block th:each="month : ${archive.months}">
-        <h3 th:text="|${archive.year}-${month.month}|"></h3>
-        <ul class="post-list">
-          <li class="post-item" th:each="post : ${month.posts}">
-            <h2 class="post-title">
-              <a th:href="@{${post.status.permalink}}" th:text="${post.spec.title}"></a>
-            </h2>
-            <p class="post-meta">
-              <time th:text="${#temporals.format(post.spec.publishTime, 'yyyy-MM-dd')}"></time>
+    <p class="empty-state" th:if="${#lists.isEmpty(archives.items)}">尚无文章，静候落笔。</p>
+
+    <section class="archive-group" th:each="archive : ${archives.items}">
+      <h2 class="archive-group-year" th:text="${archive.year}">2026</h2>
+      <ol class="archive-list">
+        <th:block th:each="month : ${archive.months}">
+          <li class="archive-item" th:each="post : ${month.posts}">
+            <time
+              class="archive-item-date"
+              th:datetime="${#temporals.format(post.spec.publishTime, 'yyyy-MM-dd')}"
+              th:text="${#temporals.format(post.spec.publishTime, 'MM.dd')}"
+              >01.01</time
+            >
+            <div class="archive-item-body">
+              <h3 class="archive-item-title">
+                <span class="post-pinned" th:if="${post.spec.pinned}" title="置顶">顶</span>
+                <a th:href="@{${post.status.permalink}}" th:text="${post.spec.title}"></a>
+              </h3>
+              <p class="archive-item-excerpt" th:if="${not #strings.isEmpty(post.status.excerpt)}" th:text="${post.status.excerpt}"></p>
+            </div>
+            <p class="archive-item-meta" th:if="${not #lists.isEmpty(post.categories)}">
+              <a
+                th:each="cat : ${post.categories}"
+                th:href="@{${cat.status.permalink}}"
+                th:text="${cat.spec.displayName}"
+              ></a>
             </p>
           </li>
-        </ul>
-      </th:block>
-    </div>
-  </th:block>
+        </th:block>
+      </ol>
+    </section>
 
-  <nav class="pagination" th:if="${archives.hasPrevious() || archives.hasNext()}">
-    <a th:if="${archives.hasPrevious()}" th:href="@{${archives.prevUrl}}">Previous</a>
-    <span th:text="|${archives.page} / ${archives.totalPages}|"></span>
-    <a th:if="${archives.hasNext()}" th:href="@{${archives.nextUrl}}">Next</a>
-  </nav>
+    <th:block th:with="posts = ${archives}">
+      <include src="pagination.html"></include>
+    </th:block>
+  </section>
 </include>

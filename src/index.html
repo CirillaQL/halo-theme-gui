@@ -35,18 +35,183 @@
     ></p>
   </section>
 
-  <section class="home-posts" id="home-posts" aria-labelledby="home-posts-title">
-    <header class="home-posts-header">
-      <p class="section-kicker" id="home-posts-title">00 · 文章</p>
-      <p class="section-count" th:if="${posts.total > 0}">
-        共 <strong th:text="${posts.total}">0</strong> 篇
-      </p>
-    </header>
-    <p class="empty-state" th:if="${#lists.isEmpty(posts.items)}">尚无文章，静候落笔。</p>
-    <ul class="post-list">
-      <include src="post-card.html"></include>
-    </ul>
-  </section>
+  <div class="home-sections" th:with="home = ${theme.config.home}">
+    <!-- 最近文章 -->
+    <section
+      class="home-section home-recent"
+      id="home-posts"
+      aria-labelledby="home-recent-title"
+      th:if="${#strings.toString(home?.posts_enabled) != 'false'}"
+      th:with="recentPosts = ${postFinder.list(1, home?.home_post_count ?: 5)}"
+    >
+      <header class="home-section-header">
+        <p class="section-kicker home-section-kicker" id="home-recent-title">最近文章</p>
+        <a class="home-section-more" th:href="@{/archives}">
+          全部文章<span th:if="${recentPosts.total > 0}" th:text="| · ${recentPosts.total} 篇|"></span>
+        </a>
+      </header>
 
-  <include src="pagination.html"></include>
+      <p class="empty-state" th:if="${#lists.isEmpty(recentPosts.items)}">尚无文章，静候落笔。</p>
+
+      <th:block th:if="${not #lists.isEmpty(recentPosts.items)}">
+        <article
+          class="recent-lead"
+          th:with="post = ${recentPosts.items[0]}"
+          th:classappend="${#strings.isEmpty(post.spec.cover)} ? ' recent-lead-no-cover'"
+        >
+          <figure class="post-cover recent-lead-cover" th:if="${not #strings.isEmpty(post.spec.cover)}">
+            <a th:href="@{${post.status.permalink}}" tabindex="-1" aria-hidden="true">
+              <img th:src="@{${post.spec.cover}}" th:alt="${post.spec.title}" decoding="async" />
+            </a>
+          </figure>
+          <div class="recent-lead-body">
+            <p class="post-meta recent-lead-meta">
+              <time
+                th:datetime="${#temporals.format(post.spec.publishTime, 'yyyy-MM-dd')}"
+                th:text="${#temporals.format(post.spec.publishTime, 'yyyy.MM.dd')}"
+              ></time>
+              <a
+                th:each="cat : ${post.categories}"
+                th:href="@{${cat.status.permalink}}"
+                th:text="${cat.spec.displayName}"
+                class="post-category-link"
+              ></a>
+            </p>
+            <h2 class="post-title recent-lead-title">
+              <span class="post-pinned" th:if="${post.spec.pinned}" title="置顶">顶</span>
+              <a th:href="@{${post.status.permalink}}" th:text="${post.spec.title}"></a>
+            </h2>
+            <p class="post-excerpt" th:text="${post.status.excerpt}"></p>
+            <a class="home-section-more recent-lead-more" th:href="@{${post.status.permalink}}">阅读全文</a>
+          </div>
+        </article>
+
+        <ol class="recent-list" th:if="${#lists.size(recentPosts.items) > 1}">
+          <li
+            class="recent-item"
+            th:each="post, stat : ${recentPosts.items}"
+            th:if="${stat.index > 0}"
+          >
+            <span class="recent-item-index" th:text="${#numbers.formatInteger(stat.count, 2)}">02</span>
+            <div class="recent-item-body">
+              <h3 class="recent-item-title">
+                <span class="post-pinned" th:if="${post.spec.pinned}" title="置顶">顶</span>
+                <a th:href="@{${post.status.permalink}}" th:text="${post.spec.title}"></a>
+              </h3>
+              <p class="recent-item-meta">
+                <time
+                  th:datetime="${#temporals.format(post.spec.publishTime, 'yyyy-MM-dd')}"
+                  th:text="${#temporals.format(post.spec.publishTime, 'yyyy.MM.dd')}"
+                ></time>
+                <a
+                  th:each="cat : ${post.categories}"
+                  th:href="@{${cat.status.permalink}}"
+                  th:text="${cat.spec.displayName}"
+                ></a>
+              </p>
+            </div>
+          </li>
+        </ol>
+      </th:block>
+    </section>
+
+    <!-- 瞬间：插件未安装、已关闭或暂无内容时不显示 -->
+    <th:block
+      th:if="${#strings.toString(home?.moments_enabled) != 'false' && pluginFinder.available('PluginMoments')}"
+    >
+      <th:block th:with="homeMoments = ${momentFinder.list(1, home?.home_moment_count ?: 3)}">
+        <section
+          class="home-section home-moments"
+          aria-labelledby="home-moments-title"
+          th:if="${not #lists.isEmpty(homeMoments.items)}"
+        >
+          <header class="home-section-header">
+            <p class="section-kicker home-section-kicker" id="home-moments-title">瞬间</p>
+            <a class="home-section-more" th:href="@{/moments}">更多瞬间</a>
+          </header>
+
+          <ol class="home-moment-list">
+            <li
+              class="home-moment"
+              th:each="moment : ${homeMoments.items}"
+              th:with="content = ${moment.spec.content}, momentPhotos = ${content.medium == null ? {} : content.medium.?[type.name == 'PHOTO']}"
+            >
+              <a class="home-moment-link" th:href="@{|/moments/${moment.metadata.name}|}">
+                <time
+                  class="home-moment-date"
+                  th:datetime="${#temporals.format(moment.spec.releaseTime, 'yyyy-MM-dd')}"
+                >
+                  <strong th:text="${#temporals.format(moment.spec.releaseTime, 'dd')}">01</strong>
+                  <span th:text="${#temporals.format(moment.spec.releaseTime, 'yyyy.MM')}">2026.01</span>
+                </time>
+              </a>
+              <div
+                class="home-moment-text"
+                th:if="${not #strings.isEmpty(content.html)}"
+                th:utext="${content.html}"
+              ></div>
+              <div class="home-moment-thumbs" th:if="${not #lists.isEmpty(momentPhotos)}">
+                <th:block th:each="media, mediaStat : ${momentPhotos}">
+                  <img th:if="${mediaStat.index < 3}" th:src="${media.url}" alt="" loading="lazy" />
+                </th:block>
+                <span
+                  class="home-moment-thumbs-more"
+                  th:if="${#lists.size(momentPhotos) > 3}"
+                  th:text="|+${#lists.size(momentPhotos) - 3}|"
+                ></span>
+              </div>
+              <p class="home-moment-tags" th:if="${not #lists.isEmpty(moment.spec.tags)}">
+                <span th:each="tag : ${moment.spec.tags}" th:text="|#${tag}|"></span>
+              </p>
+            </li>
+          </ol>
+        </section>
+      </th:block>
+    </th:block>
+
+    <!-- 图库：插件未安装、已关闭或暂无图片时不显示 -->
+    <th:block
+      th:if="${#strings.toString(home?.photos_enabled) != 'false' && pluginFinder.available('PluginPhotos')}"
+    >
+      <th:block th:with="homePhotos = ${photoFinder.list(1, home?.home_photo_count ?: 9)}">
+        <section
+          class="home-section home-photos"
+          aria-labelledby="home-photos-title"
+          th:if="${not #lists.isEmpty(homePhotos.items)}"
+        >
+          <header class="home-section-header">
+            <p class="section-kicker home-section-kicker" id="home-photos-title">图库</p>
+            <a class="home-section-more" th:href="@{/photos}">
+              进入图库<span th:text="| · ${homePhotos.total} 张|"></span>
+            </a>
+          </header>
+
+          <ul class="home-photo-grid">
+            <li class="home-photo" th:each="photo : ${homePhotos.items}">
+              <a
+                class="photo-link"
+                th:href="${photo.spec.url}"
+                th:title="${photo.spec.displayName}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  th:src="${#strings.isEmpty(photo.spec.cover) ? photo.spec.url : photo.spec.cover}"
+                  th:alt="${photo.spec.displayName}"
+                  loading="lazy"
+                />
+                <span class="photo-caption">
+                  <strong th:text="${photo.spec.displayName}">Photo</strong>
+                  <small
+                    th:if="${not #strings.isEmpty(photo.spec.description)}"
+                    th:text="${photo.spec.description}"
+                  ></small>
+                </span>
+              </a>
+            </li>
+          </ul>
+        </section>
+      </th:block>
+    </th:block>
+  </div>
 </include>

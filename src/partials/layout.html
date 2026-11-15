@@ -17,14 +17,30 @@
     <header class="site-header">
       <div class="container">
         <a class="site-title" th:href="@{/}" th:text="${site.title}">Site Title</a>
-        <nav class="site-nav" th:with="menu = ${menuFinder.getPrimary()}">
+        <nav
+          class="site-nav"
+          th:with="
+            menu = ${menuFinder.getPrimary()},
+            navPosts = ${#strings.toString(theme.config.nav?.posts_enabled) != 'false' && #lists.isEmpty(menu.menuItems.?[status.href == '/archives' || status.href == '/archives/'])},
+            navPostsLabel = ${#strings.isEmpty(theme.config.nav?.posts_label) ? '文章' : theme.config.nav.posts_label}
+          "
+        >
           <ul>
-            <li th:each="item : ${menu.menuItems}">
-              <a
-                th:href="@{${item.status.href}}"
-                th:text="${item.status.displayName}"
-                th:target="${item.spec.target?.value}"
-              ></a>
+            <th:block th:each="item, itemStat : ${menu.menuItems}">
+              <li>
+                <a
+                  th:href="@{${item.status.href}}"
+                  th:text="${item.status.displayName}"
+                  th:target="${item.spec.target?.value}"
+                ></a>
+              </li>
+              <!-- 文章入口：紧跟在第一个菜单项（通常是首页）之后 -->
+              <li th:if="${navPosts && itemStat.first}">
+                <a th:href="@{/archives}" th:text="${navPostsLabel}">文章</a>
+              </li>
+            </th:block>
+            <li th:if="${navPosts && #lists.isEmpty(menu.menuItems)}">
+              <a th:href="@{/archives}" th:text="${navPostsLabel}">文章</a>
             </li>
           </ul>
         </nav>

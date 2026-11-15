@@ -105,6 +105,68 @@ spec:
           help: 显示在首页大标题下方。留空则不显示。
           value: ""
           if: "$get(hero_enabled).value"
+        - $formkit: checkbox
+          name: posts_enabled
+          id: posts_enabled
+          label: 显示最近文章
+          help: 首页各区块按“最近文章、瞬间、图库”顺序纵向排列，可分别开关；序号随开启的区块自动编排。
+          value: true
+        - $formkit: number
+          name: home_post_count
+          key: home_post_count
+          if: "$get(posts_enabled).value"
+          label: 最近文章数量
+          help: 首页“最近文章”显示的篇数，第一篇以大图展示，其余为列表。完整列表见归档页。
+          value: 5
+          min: 1
+          max: 20
+          step: 1
+        - $formkit: checkbox
+          name: moments_enabled
+          id: moments_enabled
+          label: 显示瞬间
+          help: 需要安装并启用“瞬间”插件；暂无瞬间时自动隐藏。
+          value: true
+        - $formkit: number
+          name: home_moment_count
+          key: home_moment_count
+          label: 瞬间数量
+          value: 3
+          min: 1
+          max: 12
+          step: 1
+          if: "$get(moments_enabled).value"
+        - $formkit: checkbox
+          name: photos_enabled
+          id: photos_enabled
+          label: 显示图库
+          help: 需要安装并启用“图库”插件；暂无图片时自动隐藏。
+          value: true
+        - $formkit: number
+          name: home_photo_count
+          key: home_photo_count
+          label: 图库图片数量
+          help: 第一张以大图展示，填写 5、9、13 等数量可恰好排满网格。
+          value: 9
+          min: 1
+          max: 24
+          step: 1
+          if: "$get(photos_enabled).value"
+    - group: nav
+      label: 导航
+      formSchema:
+        - $formkit: checkbox
+          name: posts_enabled
+          id: nav_posts_enabled
+          label: 导航栏显示文章入口
+          help: 在第一个菜单项（通常是首页）之后加入“文章”，链接到归档页。若菜单中已有指向 /archives 的菜单项则不重复添加。
+          value: true
+        - $formkit: text
+          name: posts_label
+          key: nav_posts_label
+          label: 文章入口名称
+          value: "文章"
+          if: "$get(nav_posts_enabled).value"
     - group: styles
       label: 样式
       formSchema:
